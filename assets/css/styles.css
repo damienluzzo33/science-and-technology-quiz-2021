@@ -1,0 +1,43 @@
+:root {
+    --light-blue: rgba(62, 200, 255, 0.712);
+    --greyish: rgb(54, 54, 54);
+}
+
+* {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+body {
+    text-align: center;
+}
+
+p {
+    font-size: 2rem;
+    font-weight: 800;
+    color: blue;
+    transition: all 3s ease;
+}
+
+#start-button {
+    font-size: 2.5rem;
+    border: solid 2px black;
+    border-radius: 20px;
+    box-shadow: 2px 2px 2px var(--greyish), -2px -2px 2px var(--greyish), -2px 2px 2px var(--greyish), 2px -2px 2px var(--greyish);
+    transition: all 0.5s ease-in;
+}
+
+#start-button:hover {
+    box-shadow: 1px 1px 6px var(--light-blue), -1px -1px 6px var(--light-blue), 1px -1px 6px var(--light-blue), -1px 1px 6px var(--light-blue);
+    zoom: 105%;
+    transition: all 0.2s ease-in;
+}
+
+#start-button:active {
+    box-shadow: inset 1px 1px 4px var(--greyish), inset -1px -1px 4px var(--greyish), inset 1px -1px 4px var(--greyish), inset -1px 1px 4px var(--greyish);
+}
+
+
+#quiz {
+    background-color: ;
+    transition: all 10s linear;
+}
