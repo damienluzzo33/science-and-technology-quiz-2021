@@ -67,7 +67,7 @@ var triviaFacts = [
 		options: {
 			a: 'Venus',
 			b: 'Mars',
-			c: 'Earth',
+			c: 'The Sun',
 			d: 'Mercury'
 		},
 		answer: 'a'
@@ -88,34 +88,39 @@ var triviaFacts = [
 var quiz = document.getElementById("quiz");
 var start = document.getElementById("start-button");
 
+// Define countdown starting point
+var timeRemaining = 120;
+
+var clock;
 // Functions Go Here
 function startTimer() {
-    // Define countdown starting point
-    var timeRemaining = 120;
     // Create paragraph tag to contain count down timer
-    var clock = document.createElement("p");
-    // set clock's text content to show the time at the start of the counter so that question and time render at the same time
-    clock.textContent = "2:00";
+    clock = document.createElement("p");
     // Append clock element p tag as first child of quiz section
     quiz.appendChild(clock);
-    // decrement the time remaining here to sync with the slight delay of the setInterval function
-    timeRemaining --;
     // create set interval
+    // when the timer starts at 120
+    if (timeRemaining === 120) {
+        // set clock's text content to show the time at the start of the counter so that question and time render at the same time
+        clock.textContent = "2:00";
+    // decrement the time remaining here to sync with the slight delay of the setInterval function
+        timeRemaining --;
+    } 
+
     var countDown = setInterval(function() {
-        // while time remaining is greater than 60 seconds
+        // if the time remaining is greater than 69
         if (timeRemaining > 69) {
             // set clock's text content to show the time remaining
             clock.textContent = "1:" + (timeRemaining - 60);
             // decrement the time remaining during every interval where this if condition is met
             timeRemaining --;
-            // while there are more than 10 seconds on the clock
-        } // while time remaining is greater than 60 seconds
-        else if (timeRemaining > 59) {
+            // while time remaining is greater than 59
+        } else if (timeRemaining > 59) {
             // set clock's text content to show the time remaining
             clock.textContent = "1:0" + (timeRemaining - 60);
             // decrement the time remaining during every interval where this if condition is met
-            timeRemaining --;
-        
+            timeRemaining --; 
+            // while there are more than 10 seconds on the clock
         } else if (timeRemaining > 10) {
             // set clock's text content to show the time remaining
             clock.textContent = "0:" + timeRemaining;
@@ -138,20 +143,25 @@ function startTimer() {
             clock.textContent = "0:0" + timeRemaining;
             // decrement the time remaining during every interval where this if condition is met
             timeRemaining --;
+            //otherwise the game is over
         } else {
-            // when timer reaches 0, clock text content is set to an empty string
-            clock.textContent = "";
-            // and countdown interval function is escaped using clearInterval
-            clearInterval(countDown);
             // get rid of the timer
             quiz.removeChild(clock);
+            // remove form if it's there
+            form.remove();
+            // countdown interval function is escaped using clearInterval
+            clearInterval(countDown);
+            // call function to show score
+            showScore();
+            console.log("time ran out!")
         }
         // each interval is 1 second in duration
     }, 1000);
 }
 
 var questionIndex = 0;
-var numQuestions = 8;
+var numQuestions = triviaFacts.length;
+var optionsObj, finalScore, finalGrade, factCheck;
 
 // This is a function to present questions to user with radio button options to choose from accompanied by a submit button
 function promptQuestions() {
@@ -165,10 +175,158 @@ function promptQuestions() {
     form.appendChild(questionText);
     // update question text to reflect the text of the current question
     questionText.textContent = triviaFacts[questionIndex].question;
+    // gather options object for current question
+    optionsObj = triviaFacts[questionIndex].options;
+    // create line break element to add in form
+    var br;
     // for each question, create a label and an input for each choice
-    for (var i = 0; i < numQuestions; i++) {
-        // TODO: PUT LOGIC HERE
+    for (var key in optionsObj) {
+        var input = document.createElement("input");
+        form.appendChild(input);
+        input.setAttribute("type","radio");
+        input.setAttribute("id",key);
+        input.setAttribute("value",key);
+        input.setAttribute("name",key);
+        var label = document.createElement("label");
+        form.appendChild(label);
+        label.setAttribute("for",key);
+        label.textContent = optionsObj[key];
+        br = document.createElement("br");
+        form.appendChild(br);
     }
+    // create submit button so that user can submit selection
+    var submit = document.createElement("button");
+    // put button inside of form
+    form.appendChild(submit);
+    // add text to button that reads "submit"
+    submit.textContent = "Submit";
+    // add event listener to listen for the click of the submit button
+    submit.addEventListener('click', function(event) {
+        // prevent default behavior of button
+        event.preventDefault();
+        // fetch the answer from the array
+        var correctAnswer = triviaFacts[questionIndex].answer;
+        console.log(correctAnswer);
+        // query select all inputs into an array
+        var allInputs = form.querySelectorAll("input");
+        // loop through array of inputs
+        for (var element of allInputs) {
+            // if the input element has been selected (checked)
+            if (element.checked) {
+                // put the user's choice in a variable
+                var userResponse = element.getAttribute("name");
+                console.log(userResponse);
+            }
+        }
+        
+        // see if the user got the correct answer
+        if (userResponse === correctAnswer) {
+            // add 1 to the user's score
+            finalScore++;
+            // log that user was correct
+            factCheck = "correct";
+        // if they got it wrong
+        } else {
+            // decrement the time remaining
+            timeRemaining -= 10;
+            // log that user was incorrect
+            factCheck = "incorrect";
+        }
+
+        // store the correct answer and if they got it right or not
+        localStorage.setItem(questionIndex, JSON.stringify([userResponse, factCheck]));
+
+        if (questionIndex < numQuestions - 1) {
+            // increment the question index
+            questionIndex++;
+            // destroy the current form
+            form.remove();
+            // call the next question
+            promptQuestions();
+        } else {
+            // TODO: FIX THIS BUG
+            // destroy the current form
+            form.remove();
+            // destroy the timer
+            quiz.removeChild(clock);
+            console.log("done!");
+            endGame(finalScore);
+        }
+    });
+}
+
+function endGame(finalScore) {
+    showScore(finalScore);
+    showMissed();
+    saveScorePrompt();
+}
+
+function saveScorePrompt() {
+
+}
+
+function showMissed() {
+    var showUserAnswer, showCorrectAnswer;
+    for (var i = 0; i < numQuestions; i++) {
+        // fetch and parse the users submission results from local storage 
+        var userDataArray = JSON.parse(localStorage.getItem(i));
+        // if response was correct
+        if (userDataArray[1] === "correct") {
+            // create p element for each response that was correct
+            showUserAnswer = document.createElement("p");
+            // append showUserAnswer to the quiz element
+            quiz.appendChild(showUserAnswer);
+            // display correct message
+            showUserAnswer.textContent = `Question ${i + 1}: Your answer of ${userDataArray[0]} was correct!`;
+            // change color of correct responses to green
+            showUserAnswer.setAttribute("style", "color: green");
+        } else {
+            // create p element for each response that was not correct
+            showUserAnswer = document.createElement("p");
+            // append showUserAnswer to the quiz element
+            quiz.appendChild(showUserAnswer);
+            // create p element for each the correct responses for the ones the user got wrong
+            showCorrectAnswer = document.createElement("p");
+            // append showCorrectAnswer to the quiz element
+            quiz.appendChild(showCorrectAnswer);
+            // get the correct answer identifier and text from trivia object
+            var correctAnswerId = triviaFacts[i].answer;
+            var correctAnswerText = triviaFacts[i].options[correctAnswerId];
+            // display incorrect message
+            showUserAnswer.textContent = `Question ${i + 1}: Your answer of ${userDataArray[0]} was incorrect`;
+            // make text red
+            showUserAnswer.setAttribute("style", "color: red");
+            // set inner text of show correct answer p tag to be the correct answer's text
+            showCorrectAnswer.textContent = `The correct Answer was ${correctAnswerId} : ${correctAnswerText}`;
+            // make text red
+            showCorrectAnswer.setAttribute("style", "color: red")
+        }
+    }
+}
+
+function showScore(finalScore) {
+    // create element to display the user's score
+    var displayScore = document.createElement("p");
+    // append quiz section with the display score p element
+    quiz.appendChild(displayScore);
+    // determine grade for user
+    if (finalScore === 8) finalGrade = "A+";
+    else if (finalScore === 7) finalGrade = "B";
+    else if (finalScore === 6) finalGrade = "C";
+    else if (finalScore === 5) finalGrade = "D";
+    else if (finalScore <= 4 && finalScore > 0) finalGrade = "F";
+    else finalGrade = "I have no words..."
+    // create element to display user's grade
+    var displayGrade = document.createElement("p");
+    // append quiz section with the display grade p element
+    quiz.appendChild(displayGrade);
+    // set inner text of user grade to reflect on their performance
+    displayGrade.textContent = finalGrade;
+    // set inner text of user score p tag to show their fraction representation of their correct answers divided by the number of questions in the quiz
+    displayScore.textContent = `${finalScore}/${numQuestions}`;
+    // give display grade and display score an id
+    displayGrade.setAttribute("id","displayGrade")
+    displayScore.setAttribute("id","displayScore")
 }
 
 // This is a function to initiate the beginning of the quiz
@@ -178,12 +336,12 @@ function startQuiz() {
     start.setAttribute("style", "display: none");
     // call the startTimer function to start the countdown for the user
     startTimer();
+    // call the promptQuestions function to start displaying questions
     promptQuestions();
 }
 
 // Event listeners for the start quiz button, which when clicked will call the startQuiz function to kick off the sequence of functions that run the application
 start.addEventListener("click", startQuiz);
-
 
 // PSEUDO CODE HERE : 
 
@@ -193,19 +351,21 @@ start.addEventListener("click", startQuiz);
 
 // if the time permits, add a hint when timer reaches 15 seconds left on the clock
 
-// When the start-quiz button is clicked by the user, the instructions and start-quiz button will disappear
+// // When the start-quiz button is clicked by the user, the instructions and start-quiz button will disappear
 
-// After instructions and button are removed from view, the user will be prompted with the first question from the array of "trivia" array
+// // After instructions and button are removed from view, the user will be prompted with the first question from the array of "trivia" array
 
-// User will be prompted with four radio buttons when submitting answers to quiz questions and will submit answer by clicking submit button
+// // User will be prompted with four radio buttons when submitting answers to quiz questions and will submit answer by clicking submit button
 
-// if the user chooses incorrectly, 10 seconds will be deducted from the timer
+// // if the user chooses incorrectly, 10 seconds will be deducted from the timer
 
-// When the user submits an answer, the user will be prompted with another question
+// // When the user submits an answer, the user will be prompted with another question
 
 // if the user submits responses for all questions, or if the timer runs down to zero, the quiz is over
 
-// when the quiz is over, the user will be presented with (1) their overall score, (2) an associated grade, (3) correct answers for the questions they answered incorrectly (and if time permits, explanations for the correct response), and the option to add their initials and save their score
+// // when the quiz is over, the user will be presented with (1) their overall score, (2) an associated grade, and (3) correct answers for the questions they answered incorrectly (and if time permits, explanations for the correct response) 
+
+// add the option to add their initials and save their score
 
 // user will then be prompted to start over if they choose
 
