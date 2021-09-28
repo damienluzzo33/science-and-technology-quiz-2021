@@ -87,11 +87,28 @@ var triviaFacts = [
 // use getElementById to select and store the quiz section and the start button
 var quiz = document.getElementById("quiz");
 var start = document.getElementById("start-button");
+var footer = document.querySelector('footer');
+// create element in the footer to display the last score that the user has received, if they have one
+var lastScore = document.createElement('p');
+// Define main global variables
+var questionIndex = 0;
+var finalScore = 0;
+var numQuestions = triviaFacts.length;
+var optionsObj, finalGrade, factCheck, clock;
 
 // Define countdown starting point
 var timeRemaining = 120;
-
-var clock;
+// get the user's last score from the dom
+var savedScore = JSON.parse(localStorage.getItem("savedScores"));
+// if there are values in the saved scores array
+if (savedScore !== null) {
+    // add last score element to the footer of the page
+    footer.appendChild(lastScore);
+    // display the score and user initials as the lastScore text
+    lastScore.textContent = `${savedScore[0]}'s Last Score : ${savedScore[1]}/${numQuestions}`;
+} else {
+    lastScore.remove();
+}
 // Functions Go Here
 function startTimer() {
     // Create paragraph tag to contain count down timer
@@ -107,7 +124,7 @@ function startTimer() {
         timeRemaining --;
     } 
 
-    var countDown = setInterval(function() {
+    var countDown = setInterval( function() {
         // if the time remaining is greater than 69
         if (timeRemaining > 69) {
             // set clock's text content to show the time remaining
@@ -135,7 +152,7 @@ function startTimer() {
             // decrement the time remaining during every interval where this if condition is met
             timeRemaining --;
             // if there are 9 seconds on the clock, text will stay red
-        } else if (timeRemaining >= 0) {
+        } else if (timeRemaining > 0) {
             // keep color of the clock text red and start transition to cadmium red background color to initiate more urgency
             clock.setAttribute("style", "color: #880808");
             quiz.setAttribute("style", "background-color: #ee4c2ba4")
@@ -145,6 +162,8 @@ function startTimer() {
             timeRemaining --;
             //otherwise the game is over
         } else {
+            // set clock's text content to show the time remaining
+            clock.textContent = "0:0" + timeRemaining;
             // countdown interval function is escaped using clearInterval
             clearInterval(countDown);
             // get rid of the timer
@@ -152,16 +171,12 @@ function startTimer() {
             // remove form if it's there
             form.remove();
             // call function to show score
-            showScore();
+            endGame();
             console.log("time ran out!")
         }
         // each interval is 1 second in duration
     }, 1000);
 }
-
-var questionIndex = 0;
-var numQuestions = triviaFacts.length;
-var optionsObj, finalScore, finalGrade, factCheck;
 
 // This is a function to present questions to user with radio button options to choose from accompanied by a submit button
 function promptQuestions() {
@@ -216,7 +231,7 @@ function promptQuestions() {
             // if the input element has been selected (checked)
             if (element.checked) {
                 // put the user's choice in a variable
-                var userResponse = element.getAttribute("name");
+                var userResponse = element.getAttribute("value");
                 console.log(userResponse);
             }
         }
@@ -252,7 +267,6 @@ function promptQuestions() {
             quiz.removeChild(clock);
             timeRemaining = Infinity;
             console.log("done!");
-            console.log(timeRemaining);
             endGame(finalScore);
         }
     });
@@ -282,23 +296,97 @@ function saveScorePrompt() {
     quiz.appendChild(yesBtn);
     quiz.appendChild(noBtn);
     // color code the buttons
-    yesBtn.setAttribute("style", "background-color: green; color: white;")
-    noBtn.setAttribute("style", "background-color: red; color: white;")
+    yesBtn.setAttribute("style", "background-color: green; color: white; width: 100px; height: 60px;");
+    noBtn.setAttribute("style", "background-color: red; color: white; width: 100px; height: 60px;");
+    // add text to buttons
+    yesBtn.textContent = "YES";
+    noBtn.textContent = "NO";
     // add event listeners for the buttons
     yesBtn.addEventListener("click", saveUserScore);
     noBtn.addEventListener("click", replay);
 }
 
+// this a function that will prompt the user with the option to play again
 function replay() {
-    console.log("new game started!");
+    // grab all of the elements inside of quiz if the quiz has children
+    if (quiz.children) {
+        // store quiz children in variable
+        var quizElements = quiz.children;
+        // loop through the quiz elements and remove them one by one except for the first two elements
+        for (var i = 2; i < quizElements.length; i++) {
+            quizElements[i].setAttribute('style', 'display: none');
+        }
+    }
+    // create button to allow user to play again if they want to
+    var playAgain = document.createElement("button");
+    // add play again button to the quiz element
+    quiz.appendChild(playAgain);
+    // add text and styles to button
+    playAgain.textContent = "Play Again";
+    // add event listener for play again button
+    playAgain.addEventListener("click", function() {
+        // remove the score and grade p elements
+        var quizContent = quiz.children;
+        // for each of the quiz's child element
+        for (var el of quizContent) {
+            el.setAttribute("style", "display: none;");
+        }
+        // reset the timer
+        timeRemaining = 120;
+        // reset question index
+        questionIndex = 0;
+        // reset the final score
+        finalScore = 0;
+        // start the quiz over
+        startQuiz();
+    })
 }
 
-// function saveUserScore() {
-//     var saveScoreForm = document.createElement("form");
-//     quiz.appendChild(saveScoreForm);
-//     var initialsInput = document.createElement("INPUT");
-//     saveScoreForm.appendChild(initialsInput);
-// }
+function saveUserScore() {
+    // grab all of the elements inside of quiz;
+    var quizElements = quiz.children;
+    // loop through the quiz elements and remove them one by one except for the first two elements
+    for (var i = 2; i < quizElements.length; i++) {
+        quizElements[i].setAttribute('style', 'display: none');
+    }
+    // create a form for user to enter initials
+    var saveScoreForm = document.createElement("form");
+    // append the form to the quiz element
+    quiz.appendChild(saveScoreForm);
+    // create an input for the form
+    var initialsInput = document.createElement("input");
+    // apply attributes to the input
+    initialsInput.setAttribute("type","text");
+    initialsInput.setAttribute("id", "initials");
+    initialsInput.setAttribute("name","initials")
+    // create a label element for the input
+    var initialsLabel = document.createElement("label");
+    // apply attribute to the label
+    initialsLabel.setAttribute("for","initials");
+    // set text of the label
+    initialsLabel.textContent = "Your Initials";
+    // append the label to the form
+    saveScoreForm.appendChild(initialsLabel);
+    // append the input to the form element
+    saveScoreForm.appendChild(initialsInput);
+    // add button to save score when initials have been entered
+    var saveScoreBtn = document.createElement('button');
+    // add button to the save score form
+    saveScoreForm.appendChild(saveScoreBtn);
+    // add text and style to button
+    saveScoreBtn.textContent = "SAVE";
+    saveScoreBtn.setAttribute("style", "background-color: blue; color: white; display: block;");
+    // add event listener to the button
+    saveScoreBtn.addEventListener("click", function() {
+        // store score in local storage
+        localStorage.setItem("savedScores", JSON.stringify([initialsInput.value, finalScore]));
+        // remove elements in the quiz section;
+        saveScoreForm.remove();
+        saveScoreBtn.remove();
+        // call the function to prompt user with 
+        replay();
+    });
+}
 
 function showMissed() {
     var showUserAnswer, showCorrectAnswer;
@@ -350,18 +438,18 @@ function showScore(finalScore) {
     else if (finalScore === 6) finalGrade = "C";
     else if (finalScore === 5) finalGrade = "D";
     else if (finalScore <= 4 && finalScore > 0) finalGrade = "F";
-    else finalGrade = "I have no words..."
+    else finalGrade = "I have no words...";
     // create element to display user's grade
     var displayGrade = document.createElement("p");
     // append quiz section with the display grade p element
     quiz.appendChild(displayGrade);
     // set inner text of user grade to reflect on their performance
-    displayGrade.textContent = finalGrade;
+    displayGrade.textContent = "Grade: " + finalGrade;
     // set inner text of user score p tag to show their fraction representation of their correct answers divided by the number of questions in the quiz
-    displayScore.textContent = `${finalScore}/${numQuestions}`;
-    // give display grade and display score an id
-    displayGrade.setAttribute("id","displayGrade")
-    displayScore.setAttribute("id","displayScore")
+    displayScore.textContent = `Final Score: ${finalScore}/${numQuestions}`;
+    // give display grade and display score an id for easier css styling
+    displayGrade.setAttribute("id","displayGrade");
+    displayScore.setAttribute("id","displayScore");
 }
 
 // This is a function to initiate the beginning of the quiz
@@ -400,6 +488,6 @@ start.addEventListener("click", startQuiz);
 
 // // when the quiz is over, the user will be presented with (1) their overall score, (2) an associated grade, and (3) correct answers for the questions they answered incorrectly (and if time permits, explanations for the correct response) 
 
-// add the option to add their initials and save their score
+// // add the option to add their initials and save their score
 
-// user will then be prompted to start over if they choose
+// // user will then be prompted to start over if they choose
