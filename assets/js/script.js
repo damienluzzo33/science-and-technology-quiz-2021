@@ -145,12 +145,12 @@ function startTimer() {
             timeRemaining --;
             //otherwise the game is over
         } else {
-            // get rid of the timer
-            quiz.removeChild(clock);
-            // remove form if it's there
-            form.remove();
             // countdown interval function is escaped using clearInterval
             clearInterval(countDown);
+            // get rid of the timer
+            clock.remove();
+            // remove form if it's there
+            form.remove();
             // call function to show score
             showScore();
             console.log("time ran out!")
@@ -182,15 +182,15 @@ function promptQuestions() {
     // for each question, create a label and an input for each choice
     for (var key in optionsObj) {
         var input = document.createElement("input");
-        form.appendChild(input);
         input.setAttribute("type","radio");
         input.setAttribute("id",key);
         input.setAttribute("value",key);
-        input.setAttribute("name",key);
+        input.setAttribute("name","option");
+        form.appendChild(input);
         var label = document.createElement("label");
-        form.appendChild(label);
         label.setAttribute("for",key);
         label.textContent = optionsObj[key];
+        form.appendChild(label);
         br = document.createElement("br");
         form.appendChild(br);
     }
@@ -200,6 +200,8 @@ function promptQuestions() {
     form.appendChild(submit);
     // add text to button that reads "submit"
     submit.textContent = "Submit";
+    // change styles of the submit button
+    submit.setAttribute("style", "background-color: blue; color: white;")
     // add event listener to listen for the click of the submit button
     submit.addEventListener('click', function(event) {
         // prevent default behavior of button
@@ -244,12 +246,13 @@ function promptQuestions() {
             // call the next question
             promptQuestions();
         } else {
-            // TODO: FIX THIS BUG
             // destroy the current form
             form.remove();
             // destroy the timer
             quiz.removeChild(clock);
+            timeRemaining = Infinity;
             console.log("done!");
+            console.log(timeRemaining);
             endGame(finalScore);
         }
     });
@@ -262,8 +265,40 @@ function endGame(finalScore) {
 }
 
 function saveScorePrompt() {
-
+    // create form element to allow score to be saved by user
+    var saveScore = document.createElement("form");
+    // append quiz section with the save score form
+    quiz.appendChild(saveScore);
+    // create element to show text to user
+    var tellUser = document.createElement("p");
+    // put the tee user p tag into the form
+    saveScore.appendChild(tellUser);
+    // change text content to asl user if they want to save their score
+    tellUser.textContent = "Would you like to save your score?";
+    // add button for yes and a button for no
+    var yesBtn = document.createElement("button");
+    var noBtn = document.createElement("button");
+    // add yes and no button to the quiz section
+    quiz.appendChild(yesBtn);
+    quiz.appendChild(noBtn);
+    // color code the buttons
+    yesBtn.setAttribute("style", "background-color: green; color: white;")
+    noBtn.setAttribute("style", "background-color: red; color: white;")
+    // add event listeners for the buttons
+    yesBtn.addEventListener("click", saveUserScore);
+    noBtn.addEventListener("click", replay);
 }
+
+function replay() {
+    console.log("new game started!");
+}
+
+// function saveUserScore() {
+//     var saveScoreForm = document.createElement("form");
+//     quiz.appendChild(saveScoreForm);
+//     var initialsInput = document.createElement("INPUT");
+//     saveScoreForm.appendChild(initialsInput);
+// }
 
 function showMissed() {
     var showUserAnswer, showCorrectAnswer;
@@ -299,7 +334,7 @@ function showMissed() {
             // set inner text of show correct answer p tag to be the correct answer's text
             showCorrectAnswer.textContent = `The correct Answer was ${correctAnswerId} : ${correctAnswerText}`;
             // make text red
-            showCorrectAnswer.setAttribute("style", "color: red")
+            showCorrectAnswer.setAttribute("style", "color: red");
         }
     }
 }
@@ -368,4 +403,3 @@ start.addEventListener("click", startQuiz);
 // add the option to add their initials and save their score
 
 // user will then be prompted to start over if they choose
-
