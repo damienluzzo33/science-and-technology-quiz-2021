@@ -96,23 +96,28 @@ var lastScore = document.createElement('p');
 var questionIndex = 0;
 var finalScore = 0;
 var numQuestions = triviaFacts.length;
-var optionsObj, finalGrade, factCheck, clock;
+var optionsObj, finalGrade, factCheck, clock, form;
 var countDown;
 
 // Define countdown starting point
 var timeRemaining = 120;
-// get the user's last score from the dom
-var savedScore = JSON.parse(localStorage.getItem('savedScores'));
-// if there are values in the saved scores array
-if (savedScore !== null) {
-	// add last score element to the footer of the page
-	footer.appendChild(lastScore);
-	// display the score and user initials as the lastScore text
-	lastScore.textContent = `${savedScore[0]}'s Last Score : ${savedScore[1]}/${numQuestions}`;
-} else {
-	lastScore.remove();
+
+function fetchData() {
+    // get the user's last score from the dom
+    var savedScore = JSON.parse(localStorage.getItem('savedScores'));
+    console.log(savedScore);
+    // if there are values in the saved scores array
+    if (savedScore !== null) {
+        // add last score element to the footer of the page
+        footer.appendChild(lastScore);
+        // display the score and user initials as the lastScore text
+        lastScore.textContent = `${savedScore[0]}'s Last Score : ${savedScore[1]}/${numQuestions}`;
+    } else {
+        lastScore.remove();
+    }
 }
 
+fetchData();
 // Functions Go Here
 function startTimer() {
 	// Create paragraph tag to contain count down timer
@@ -155,10 +160,15 @@ function startTimer() {
 			// decrement the time remaining during every interval where this if condition is met
 			timeRemaining--;
 			// if there are 9 seconds on the clock, text will stay red
-		} else if (timeRemaining > 0) {
+		} else if (timeRemaining > 4) {
 			// keep color of the clock text red and start transition to cadmium red background color to initiate more urgency
-			clock.setAttribute('style', 'color: #880808');
 			quiz.setAttribute('style', 'background-color: #ee4c2ba4');
+			// set clock's text content to show the time remaining
+			clock.textContent = '0:0' + timeRemaining;
+			// decrement the time remaining during every interval where this if condition is met
+			timeRemaining--;
+			//otherwise the game is over
+		} else if (timeRemaining > 0) {
 			// set clock's text content to show the time remaining
 			clock.textContent = '0:0' + timeRemaining;
 			// decrement the time remaining during every interval where this if condition is met
@@ -173,9 +183,11 @@ function startTimer() {
 			clock.remove();
 			// remove form if it's there
 			form.remove();
+            // reset background of quiz
+            quiz.setAttribute("style", "background-color: white");
 			// call function to show score
-			endGame(finalScore);
-			console.log('time ran out!');
+            console.log('time ran out!');
+            endGame(finalScore);
 		}
 		// each interval is 1 second in duration
 	}, 1000);
@@ -184,7 +196,7 @@ function startTimer() {
 // This is a function to present questions to user with radio button options to choose from accompanied by a submit button
 function promptQuestions() {
 	// create a new form element to store question, options, and button
-	var form = document.createElement('form');
+	form = document.createElement('form');
 	// add form to the quiz section
 	quiz.appendChild(form);
 	// add question text p tag
@@ -267,8 +279,8 @@ function promptQuestions() {
 			// destroy the current form
 			quiz.removeChild(form);
 			// destroy the timer
-			quiz.removeChild(clock);
-			timeRemaining = Infinity;
+			// quiz.removeChild(clock);
+			// timeRemaining = Infinity;
 			console.log('done!');
 			endGame(finalScore);
 		}
@@ -278,6 +290,7 @@ function promptQuestions() {
 function endGame(finalScore) {
 	// countdown interval function is escaped using clearInterval
 	clearInterval(countDown);
+    // call function to show final score
 	showScore(finalScore);
 	showMissed();
 	saveScorePrompt();
@@ -342,6 +355,8 @@ function replay() {
 		questionIndex = 0;
 		// reset the final score
 		finalScore = 0;
+        // fetch the data
+        fetchData();
 		// start the quiz over
 		startQuiz();
 	});
@@ -473,11 +488,7 @@ start.addEventListener('click', startQuiz);
 
 // PSEUDO CODE HERE :
 
-// Webpage needs to be responsive
-
-// Provide a set of instructions above the start-quiz button that tells the user (1) there will be 8 multiple choice questions and (2) the user will have 120 seconds to read and choose an answer for each question
-
-// if the time permits, add a hint when timer reaches 15 seconds left on the clock
+// // Webpage needs to be responsive
 
 // // When the start-quiz button is clicked by the user, the instructions and start-quiz button will disappear
 
