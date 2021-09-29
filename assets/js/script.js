@@ -85,7 +85,6 @@ var triviaFacts = [
 		answer: 'd'
 	}
 ];
-
 // use getElementById to select and store the quiz section and the start button
 var quiz = document.getElementById('quiz');
 var start = document.getElementById('start-button');
@@ -188,7 +187,6 @@ function startTimer() {
 		// each interval is 1 second in duration
 	}, 1000);
 }
-
 // This is a function to present questions to user with radio button options to choose from accompanied by a submit button
 function promptQuestions() {
 	// create a new form element to store question, options, and button
@@ -250,7 +248,6 @@ function promptQuestions() {
 		event.preventDefault();
 		// fetch the answer from the array
 		var correctAnswer = triviaFacts[questionIndex].answer;
-		console.log(correctAnswer);
 		// query select all inputs into an array
 		var allInputs = form.querySelectorAll('input');
 		// loop through array of inputs
@@ -259,10 +256,8 @@ function promptQuestions() {
 			if (element.checked) {
 				// put the user's choice in a variable
 				var userResponse = element.getAttribute('value');
-				console.log(userResponse);
 			}
 		}
-
         // if the value was null because they didn't click the radio button or time ran out
         if (userResponse === null) {
             // log that user was incorrect
@@ -279,10 +274,9 @@ function promptQuestions() {
 			// log that user was incorrect
 			factCheck = 'incorrect';
 		}
-
 		// store the correct answer and if they got it right or not
 		localStorage.setItem(questionIndex, JSON.stringify([ userResponse, factCheck ]));
-
+        // if the current in
 		if (questionIndex < numQuestions - 1) {
 			// increment the question index
 			questionIndex++;
@@ -296,12 +290,11 @@ function promptQuestions() {
 			// destroy the timer
 			// quiz.removeChild(clock);
 			// timeRemaining = Infinity;
-			console.log('done!');
 			endGame(finalScore);
 		}
 	});
 }
-
+// create function to run end of game functions
 function endGame(finalScore) {
 	// countdown interval function is escaped using clearInterval
 	clearInterval(countDown);
@@ -312,7 +305,7 @@ function endGame(finalScore) {
 	showMissed();
 	saveScorePrompt();
 }
-
+// create function to ask user if they want to save their score
 function saveScorePrompt() {
 	// create form element to allow score to be saved by user
 	var saveScore = document.createElement('form');
@@ -349,7 +342,6 @@ function saveScorePrompt() {
 	yesBtn.addEventListener('click', saveUserScore);
 	noBtn.addEventListener('click', replay);
 }
-
 // this a function that will prompt the user with the option to play again
 function replay() {
 	// grab all of the elements inside of quiz if the quiz has children
@@ -389,7 +381,7 @@ function replay() {
 		startQuiz();
 	});
 }
-
+// create function to allow user to save their score
 function saveUserScore() {
 	// grab all of the elements inside of quiz;
 	var quizElements = quiz.children;
@@ -446,7 +438,7 @@ function saveUserScore() {
 		replay();
 	});
 }
-
+// create function to show the user the correct answer to the questions they answered wrong
 function showMissed() {
 	var showUserAnswer, showCorrectAnswer;
 	for (var i = 0; i < numQuestions; i++) {
@@ -485,7 +477,7 @@ function showMissed() {
 		}
 	}
 }
-
+// create function to show the user their final score and final grade
 function showScore(finalScore) {
 	// create element to display the user's score
 	var displayScore = document.createElement('p');
@@ -510,10 +502,8 @@ function showScore(finalScore) {
 	displayGrade.setAttribute('id', 'displayGrade');
 	displayScore.setAttribute('id', 'displayScore');
 }
-
 // This is a function to initiate the beginning of the quiz
 function startQuiz() {
-	console.log('START');
 	// hide the start quiz button
 	start.setAttribute('style', 'display: none');
 	// call the startTimer function to start the countdown for the user
@@ -521,6 +511,5 @@ function startQuiz() {
 	// call the promptQuestions function to start displaying questions
 	promptQuestions();
 }
-
 // Event listeners for the start quiz button, which when clicked will call the startQuiz function to kick off the sequence of functions that run the application
 start.addEventListener('click', startQuiz);

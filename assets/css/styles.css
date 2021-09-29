@@ -51,7 +51,6 @@ p {
     box-shadow: inset 1px 1px 4px var(--greyish), inset -1px -1px 4px var(--greyish), inset 1px -1px 4px var(--greyish), inset -1px 1px 4px var(--greyish);
 }
 
-
 #quiz {
     transition: all 5s linear;
     display: flex;
