@@ -7,8 +7,13 @@
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
+header {
+    text-align: center;
+}
+
 #title {
     color: white;
+
     text-shadow: 3px 3px 6px black;
 }
 
@@ -17,6 +22,7 @@ body {
     display: flex;
     flex-direction: column;
     /* width: 100vw; */
+    margin: 0;
 }
 
 p {
@@ -50,8 +56,8 @@ p {
     transition: all 5s linear;
     display: flex;
     flex-direction: column;
-    width: 100%;
-    padding: 50px
+    width: 80%;
+    padding: 50px;
 }
 
 main {
@@ -61,8 +67,8 @@ main {
 }
 
 #questionForm {
-    width: 80%;
-    max-width: 80%;
+    width: 100%;
+    /* max-width: 80%; */
     align-self: center;
     text-align: start;
     background-color: rgba(36, 36, 36, 0.623);

@@ -21,7 +21,11 @@ Play as many times as you'd like, and good luck!
 
 ## Screenshot and Link
 
-![science and tech quiz project](./assets/images/screentshot_1.png)
+### Desktop View
+![science and tech quiz project](./assets/images/screentshot_5.png)
+
+### Mobile View
+![science and tech quiz project](./assets/images/screentshot_4.png)
 
 [Link To Project on GitHub Pages](https://damienluzzo33.github.io/science-and-technology-quiz-2021/)
 
