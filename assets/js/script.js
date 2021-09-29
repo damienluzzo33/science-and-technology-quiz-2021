@@ -8,10 +8,10 @@ var triviaFacts = [
 			c:
 				'The rate of change of momentum of a body over time is directly proportional to the force applied, and occurs in the same direction as the applied force.',
 			d: 'None of the above'
-		},
+        },
 		answer: 'c'
-	},
-	{
+        },
+        {
 		question: 'What is the mass of the smallest stellar black hole currently known to science?',
 		options: {
 			a: '10.2 Solar Masses',
@@ -90,22 +90,20 @@ var triviaFacts = [
 var quiz = document.getElementById('quiz');
 var start = document.getElementById('start-button');
 var footer = document.querySelector('footer');
+var body = document.querySelector('body');
 // create element in the footer to display the last score that the user has received, if they have one
 var lastScore = document.createElement('p');
 // Define main global variables
 var questionIndex = 0;
 var finalScore = 0;
 var numQuestions = triviaFacts.length;
-var optionsObj, finalGrade, factCheck, clock, form;
-var countDown;
-
+var optionsObj, finalGrade, factCheck, clock, form, countDown;
 // Define countdown starting point
 var timeRemaining = 120;
-
+// create function to fetch user's last score
 function fetchData() {
     // get the user's last score from the dom
     var savedScore = JSON.parse(localStorage.getItem('savedScores'));
-    console.log(savedScore);
     // if there are values in the saved scores array
     if (savedScore !== null) {
         // add last score element to the footer of the page
@@ -113,12 +111,13 @@ function fetchData() {
         // display the score and user initials as the lastScore text
         lastScore.textContent = `${savedScore[0]}'s Last Score : ${savedScore[1]}/${numQuestions}`;
     } else {
+        // otherwise remove the lastScore element
         lastScore.remove();
     }
 }
-
+// call fetchData function to display latest score
 fetchData();
-// Functions Go Here
+// create function to initiate countdown
 function startTimer() {
 	// Create paragraph tag to contain count down timer
 	clock = document.createElement('p');
@@ -131,7 +130,7 @@ function startTimer() {
 		// decrement the time remaining here to sync with the slight delay of the setInterval function
 		timeRemaining--;
 	}
-	// create set interval
+	// create set interval function (this is declared globally to allow other functions to allow endGame function to clear interval)
 	countDown = setInterval(function() {
 		// if the time remaining is greater than 69
 		if (timeRemaining > 69) {
@@ -177,16 +176,13 @@ function startTimer() {
 		} else {
 			// set clock's text content to show the time remaining
 			clock.textContent = '0:0' + timeRemaining;
-			// // countdown interval function is escaped using clearInterval
-			// clearInterval(countDown);
 			// get rid of the timer
 			clock.remove();
 			// remove form if it's there
 			form.remove();
-            // reset background of quiz
+            // reset background of the quiz
             quiz.setAttribute("style", "background-color: white");
 			// call function to show score
-            console.log('time ran out!');
             endGame(finalScore);
 		}
 		// each interval is 1 second in duration
@@ -197,6 +193,8 @@ function startTimer() {
 function promptQuestions() {
 	// create a new form element to store question, options, and button
 	form = document.createElement('form');
+    // give form an id
+    form.setAttribute("id", "questionForm")
 	// add form to the quiz section
 	quiz.appendChild(form);
 	// add question text p tag
@@ -211,21 +209,35 @@ function promptQuestions() {
 	var br;
 	// for each question, create a label and an input for each choice
 	for (var key in optionsObj) {
+        // create input for form
 		var input = document.createElement('input');
+        // give input type of radio
 		input.setAttribute('type', 'radio');
+        // give input unique id
 		input.setAttribute('id', key);
+        // set input value
 		input.setAttribute('value', key);
+        // give input name of option (all radio buttons need to have the same name to be inclusive and make it so clicking one un-checks prior selection if user changes their minds)
 		input.setAttribute('name', 'option');
+        // add input to the form
 		form.appendChild(input);
+        // create a label to connect to input
 		var label = document.createElement('label');
+        // connect label to input
 		label.setAttribute('for', key);
+        // make label text display the option
 		label.textContent = optionsObj[key];
+        // add label to the form
 		form.appendChild(label);
+        // create a line break element
 		br = document.createElement('br');
+        // add line break element to the form
 		form.appendChild(br);
 	}
 	// create submit button so that user can submit selection
 	var submit = document.createElement('button');
+    // add id to button
+    submit.setAttribute("id", "submitResponse")
 	// put button inside of form
 	form.appendChild(submit);
 	// add text to button that reads "submit"
@@ -251,8 +263,11 @@ function promptQuestions() {
 			}
 		}
 
-		// see if the user got the correct answer
-		if (userResponse === correctAnswer) {
+        // if the value was null because they didn't click the radio button or time ran out
+        if (userResponse === null) {
+            // log that user was incorrect
+			factCheck = 'incorrect';
+        } else if (userResponse === correctAnswer) {
 			// add 1 to the user's score
 			finalScore++;
 			// log that user was correct
@@ -290,6 +305,8 @@ function promptQuestions() {
 function endGame(finalScore) {
 	// countdown interval function is escaped using clearInterval
 	clearInterval(countDown);
+    // change background image
+    body.setAttribute("style", "background-image: url(https://images.unsplash.com/photo-1617888785557-f733a96e1ee5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=687&q=80); background-size: contain; background-position: top;")
     // call function to show final score
 	showScore(finalScore);
 	showMissed();
@@ -301,6 +318,7 @@ function saveScorePrompt() {
 	var saveScore = document.createElement('form');
 	// append quiz section with the save score form
 	quiz.appendChild(saveScore);
+    saveScore.setAttribute("style", "width: 400px")
 	// create element to show text to user
 	var tellUser = document.createElement('p');
 	// put the tee user p tag into the form
@@ -310,12 +328,20 @@ function saveScorePrompt() {
 	// add button for yes and a button for no
 	var yesBtn = document.createElement('button');
 	var noBtn = document.createElement('button');
+    // augment styles of quiz and buttons
+    quiz.setAttribute("style", "display: flex; justify-content: center; align-items: center; text-align: center; flex-wrap: wrap;")
+    // add div
+    var btnDiv = document.createElement('div');
+    // add styles to div and add to form
+    btnDiv.setAttribute("style", "display: flex; flex-wrap: wrap; justify-content: center; height: 100px; width: 500px; margin-bottom: 50px; background-color: rgba(36, 36, 36, 0.623);");
+    // add div to quiz
+    quiz.appendChild(btnDiv);
 	// add yes and no button to the quiz section
-	quiz.appendChild(yesBtn);
-	quiz.appendChild(noBtn);
+	btnDiv.appendChild(yesBtn);
+	btnDiv.appendChild(noBtn);
 	// color code the buttons
-	yesBtn.setAttribute('style', 'background-color: green; color: white; width: 100px; height: 60px;');
-	noBtn.setAttribute('style', 'background-color: red; color: white; width: 100px; height: 60px;');
+	yesBtn.setAttribute('style', 'background-color: green; color: white; width: 100px; height: 60px; display: inline-block; margin-right: 10px; border: solid 2px rgba(36, 36, 36, 0.623);');
+	noBtn.setAttribute('style', 'background-color: red; color: white; width: 100px; height: 60px; display: inline-block; margin-left: 10px');
 	// add text to buttons
 	yesBtn.textContent = 'YES';
 	noBtn.textContent = 'NO';
@@ -341,6 +367,8 @@ function replay() {
 	quiz.appendChild(playAgain);
 	// add text and styles to button
 	playAgain.textContent = 'Play Again';
+    // add style to play again button
+    playAgain.setAttribute("style","background-color: rgba(62, 200, 255, 0.712); color: white; display: block; width: 80px; height: 40px; border-radius: 20px;");
 	// add event listener for play again button
 	playAgain.addEventListener('click', function() {
 		// remove the score and grade p elements
@@ -371,31 +399,42 @@ function saveUserScore() {
 	}
 	// create a form for user to enter initials
 	var saveScoreForm = document.createElement('form');
+    // add style to form
+    saveScoreForm.setAttribute("style", "display: flex; flex-direction: column; justify-content: center; align-items: center;")
 	// append the form to the quiz element
 	quiz.appendChild(saveScoreForm);
+    // create div for label and input
+    var initialsDiv = document.createElement('div');
+    // give div style
+    initialsDiv.setAttribute("style", "width: 100%;")
+    // add initials div to form
+    saveScoreForm.appendChild(initialsDiv);
 	// create an input for the form
 	var initialsInput = document.createElement('input');
 	// apply attributes to the input
 	initialsInput.setAttribute('type', 'text');
 	initialsInput.setAttribute('id', 'initials');
 	initialsInput.setAttribute('name', 'initials');
+    initialsInput.setAttribute("style", "border-radius: 15px;");
 	// create a label element for the input
 	var initialsLabel = document.createElement('label');
 	// apply attribute to the label
 	initialsLabel.setAttribute('for', 'initials');
+    // give style to label
+    initialsLabel.setAttribute("style", "color: white; margin-right: 20px; font-size: 1.4rem;");
 	// set text of the label
-	initialsLabel.textContent = 'Your Initials';
+	initialsLabel.textContent = 'Your Initials:';
 	// append the label to the form
-	saveScoreForm.appendChild(initialsLabel);
+	initialsDiv.appendChild(initialsLabel);
 	// append the input to the form element
-	saveScoreForm.appendChild(initialsInput);
+	initialsDiv.appendChild(initialsInput);
 	// add button to save score when initials have been entered
 	var saveScoreBtn = document.createElement('button');
 	// add button to the save score form
 	saveScoreForm.appendChild(saveScoreBtn);
 	// add text and style to button
 	saveScoreBtn.textContent = 'SAVE';
-	saveScoreBtn.setAttribute('style', 'background-color: blue; color: white; display: block;');
+	saveScoreBtn.setAttribute('style', 'background-color: rgba(62, 200, 255, 0.712); color: white; display: block; width: 80px; height: 40px; border-radius: 20px;');
 	// add event listener to the button
 	saveScoreBtn.addEventListener('click', function() {
 		// store score in local storage
@@ -485,25 +524,3 @@ function startQuiz() {
 
 // Event listeners for the start quiz button, which when clicked will call the startQuiz function to kick off the sequence of functions that run the application
 start.addEventListener('click', startQuiz);
-
-// PSEUDO CODE HERE :
-
-// // Webpage needs to be responsive
-
-// // When the start-quiz button is clicked by the user, the instructions and start-quiz button will disappear
-
-// // After instructions and button are removed from view, the user will be prompted with the first question from the array of "trivia" array
-
-// // User will be prompted with four radio buttons when submitting answers to quiz questions and will submit answer by clicking submit button
-
-// // if the user chooses incorrectly, 10 seconds will be deducted from the timer
-
-// // When the user submits an answer, the user will be prompted with another question
-
-// if the user submits responses for all questions, or if the timer runs down to zero, the quiz is over
-
-// // when the quiz is over, the user will be presented with (1) their overall score, (2) an associated grade, and (3) correct answers for the questions they answered incorrectly (and if time permits, explanations for the correct response)
-
-// // add the option to add their initials and save their score
-
-// // user will then be prompted to start over if they choose
