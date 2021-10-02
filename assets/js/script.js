@@ -299,7 +299,7 @@ function endGame(finalScore) {
 	// countdown interval function is escaped using clearInterval
 	clearInterval(countDown);
     // change background image
-    body.setAttribute("style", "background-image: url(https://images.unsplash.com/photo-1617888785557-f733a96e1ee5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=687&q=80); background-size: contain; background-position: top;")
+    body.setAttribute("style", "background-image: url(https://images.unsplash.com/photo-1617888785557-f733a96e1ee5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=687&q=80); background-size: cover; background-position: top; background-repeat: no-repeat")
     // call function to show final score
 	showScore(finalScore);
 	showMissed();
@@ -363,6 +363,8 @@ function replay() {
     playAgain.setAttribute("style","background-color: rgba(62, 200, 255, 0.712); color: white; display: block; width: 80px; height: 40px; border-radius: 20px;");
 	// add event listener for play again button
 	playAgain.addEventListener('click', function() {
+		// reset image background
+		body.setAttribute("style", "background-image: url(https://images.unsplash.com/photo-1620428268482-cf1851a36764?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1); background-size: cover; height: 100vh; background-position: 35%;")
 		// remove the score and grade p elements
 		var quizContent = quiz.children;
 		// for each of the quiz's child element
@@ -513,3 +515,63 @@ function startQuiz() {
 }
 // Event listeners for the start quiz button, which when clicked will call the startQuiz function to kick off the sequence of functions that run the application
 start.addEventListener('click', startQuiz);
+
+
+
+
+
+// var triviaQuestions = [
+// 	{
+// 		question: 'What is my first name?',
+// 		options: [ 'Jack', 'Cole', 'Emilio', 'Damien' ],
+// 		correctAnswer: 'Jack'
+// 	},
+// 	{
+// 		question: 'What is your favorite coding language?',
+// 		options: [ 'CSS', 'C++', 'Rust', 'Javascript' ],
+// 		correctAnswer: 'Javascript'
+// 	}
+// ];
+
+// var displayDiv = document.getElementById('displayDiv');
+
+// var questionText, optionsText, timeRemaining, questionPara, optionsBtn, questionDiv;
+// var currentIndex = 0;
+// var userScore = 0;
+
+// function updateQuiz() {
+//     questionDiv = document.createElement('div');
+//     displayDiv.appendChild(questionDiv);
+
+// 	questionText = triviaQuestions[currentIndex].question;
+// 	questionPara = document.createElement('p');
+// 	questionPara.textContent = questionText;
+// 	questionDiv.appendChild(questionPara);
+
+// 	for (var i = 0; i < 4; i++) {
+//         // create options button
+//         optionsBtn = document.createElement('button');
+//         // set text of option button to be the text of the option (from the array)
+//         optionsText = triviaQuestions[currentIndex].options[i];
+//         optionsBtn.textContent = optionsText;
+//         // append the button to the div
+//         questionDiv.appendChild(optionsBtn);
+
+//         optionsBtn.addEventListener("click", function() {
+//             if (optionsBtn.textContent === triviaQuestions[currentIndex].correctAnswer) {
+//                 console.log("you got it right");
+//                 userScore++;
+//             } else {
+//                 console.log("you got it wrong");
+//                 timeRemaining -= 10;
+//             }
+//             if (currentIndex < triviaQuestions.length - 1){
+//                 currentIndex++;
+//                 questionDiv.remove();
+//                 updateQuiz();
+//             } else {
+//                 endGame();
+//             }
+//         });
+//     }
+// }
