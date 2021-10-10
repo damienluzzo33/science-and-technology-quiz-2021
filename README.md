@@ -6,7 +6,6 @@ When the timer runs out or when you complete all the questions, you'll be presen
 
 Play as many times as you'd like, and good luck!
 
-## Link to deployed project
 [Link To Project on GitHub Pages](https://damienluzzo33.github.io/science-and-technology-quiz-2021/)
 
 ## Features
