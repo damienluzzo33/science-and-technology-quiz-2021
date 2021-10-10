@@ -6,6 +6,9 @@ When the timer runs out or when you complete all the questions, you'll be presen
 
 Play as many times as you'd like, and good luck!
 
+## Link to deployed project
+[Link To Project on GitHub Pages](https://damienluzzo33.github.io/science-and-technology-quiz-2021/)
+
 ## Features
 
 + Prompts you with 8 Science and Technology questions
@@ -19,15 +22,13 @@ Play as many times as you'd like, and good luck!
 + Show user their highest score (along with their most recent score)
 + When user has spent 15 seconds on a single question, a hint should appear
 
-## Screenshot and Link
+## Screenshots
 
 ### Desktop View
 ![science and tech quiz project](./assets/images/screentshot_5.png)
 
 ### Mobile View
 ![science and tech quiz project](./assets/images/screentshot_4.png)
-
-[Link To Project on GitHub Pages](https://damienluzzo33.github.io/science-and-technology-quiz-2021/)
 
 ## Other
 
